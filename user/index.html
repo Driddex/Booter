@@ -7,12 +7,15 @@
 </head>
 <body>
     <h2>Booting the system...</h2>
-    
-    <input id="1" placeholder="Write a password for login" type="text">
-    <button id="2" onclick="login()">Enter</button> <br> <br>
 
-    <button onclick="postUser()" >CREATE USER WITH ID 56</button>
-    
+    <input id="1" placeholder="Write a password for login" type="text">
+    <button id="2" type="button" onclick="login()">Enter</button>
+    <br><br>
+
+    <button id="create-user" type="button" onclick="postUser()">CREATE USER WITH ID 56</button>
+    <p id="create-user-result" role="status" aria-live="polite"></p>
+
+    <script src="/javascript/IsLoginEnabled.js"></script>
     <script src="/javascript/Handler.js"></script>
 </body>
 </html>

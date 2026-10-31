@@ -29,6 +29,12 @@ async function login() {
     }
 }
 async function postUser() {
+    const button = document.getElementById('create-user');
+    const message = document.getElementById('create-user-result');
+    if (!button || !message || button.disabled)
+        return;
+    button.disabled = true;
+    message.textContent = 'Creating user…';
     try {
         const response = await fetch('/api/p', {
             method: 'POST',
@@ -36,10 +42,19 @@ async function postUser() {
             body: JSON.stringify({ id: 56 })
         });
         const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.detail ?? `Request failed (${response.status})`);
+        }
+        message.textContent = result.status;
         console.log(result);
     }
     catch (error) {
-        console.log('failed to create a user');
+        message.textContent = error instanceof Error ? error.message : 'Could not create user';
+        console.error('Create user request failed', error);
+    }
+    finally {
+        button.disabled = false;
     }
 }
 window.login = login;
+window.postUser = postUser;

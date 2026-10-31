@@ -4,9 +4,11 @@ from sqlalchemy.orm import sessionmaker, declarative_base,Session
 from pydantic import BaseModel
 import os
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
+DATABASE_URL = os.environ["DATABASE_URL"]
 IS_LOGIN_ENABLED = os.getenv("IS_LOGIN_ENABLED", "false")
 engine = create_engine(DATABASE_URL)
+
+LOGIN_ENABLED = False
 
 sessionlocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 base = declarative_base()
@@ -43,7 +45,7 @@ async def post(data: check_data, db: Session = Depends(get_db)):
     db.add(create_user)
     db.commit()
 
-    return {"status" : "succesfully created a user"}
+    return {"status" : "successfully created a user"}
 
 @app.post('/l')
 async def login(data: check_data, db: Session = Depends(get_db)):
