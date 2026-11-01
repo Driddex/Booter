@@ -1,4 +1,5 @@
 "use strict";
+let IS_LOGIN_ENABLED;
 function MoveToHtml(pather) {
     window.location.href = pather;
 }
@@ -29,32 +30,92 @@ async function login() {
     }
 }
 async function postUser() {
-    const button = document.getElementById('create-user');
-    const message = document.getElementById('create-user-result');
+    const button = document.getElementById('11');
+    const message = document.getElementById('10');
     if (!button || !message || button.disabled)
         return;
+    const vall = Number(message.value);
     button.disabled = true;
-    message.textContent = 'Creating user…';
     try {
         const response = await fetch('/api/p', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: 56 })
+            body: JSON.stringify({ id: vall })
         });
         const result = await response.json();
         if (!response.ok) {
-            throw new Error(result.detail ?? `Request failed (${response.status})`);
+            console.log('Response is ERROR');
         }
-        message.textContent = result.status;
         console.log(result);
     }
     catch (error) {
-        message.textContent = error instanceof Error ? error.message : 'Could not create user';
         console.error('Create user request failed', error);
     }
     finally {
         button.disabled = false;
     }
 }
+async function AskForEnv() {
+    const button = document.getElementById('3');
+    const status = document.getElementById('login-status');
+    if (!button || !status || button.disabled)
+        return;
+    button.disabled = true;
+    status.textContent = 'Checking';
+    try {
+        const response = await fetch('/api/k', { method: 'POST' });
+        if (!response.ok)
+            console.log('ERROR RESPONSE WITH ASKING FOR ENV');
+        const answers = await response.json();
+        if (answers.key === 'yes') {
+            IS_LOGIN_ENABLED = true;
+            status.textContent = 'Success';
+        }
+        else if (answers.key === 'no') {
+            IS_LOGIN_ENABLED = false;
+            MoveToHtml('/screens/mainhome.html');
+        }
+    }
+    catch (error) {
+        status.textContent = 'Unexpected error';
+        console.error('failed to check', error);
+    }
+    finally {
+        button.disabled = false;
+    }
+}
+async function OnButtonClick(path) {
+    if (!path) {
+        console.log('Where the path to the html?');
+        return;
+    }
+    MoveToHtml(path);
+}
+async function DeleteUserWithID() {
+    const button = document.getElementById('');
+    const message = document.getElementById('');
+    if (!button || !message) {
+        console.log('Elements not found...');
+        return;
+    }
+    const vall = Number(message.value);
+    try {
+        const response = await fetch('/api/d', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: vall })
+        });
+        const answer = await response.json();
+        if (!response.ok) {
+            console.log('Invalid Response,Error');
+        }
+        console.log(answer);
+    }
+    catch {
+        console.log('Error apperead, failed to delete a user!');
+    }
+}
+window.OnButtonClick = OnButtonClick;
+window.AskForEnv = AskForEnv;
 window.login = login;
 window.postUser = postUser;

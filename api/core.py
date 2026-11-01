@@ -8,7 +8,7 @@ DATABASE_URL = os.environ["DATABASE_URL"]
 IS_LOGIN_ENABLED = os.getenv("IS_LOGIN_ENABLED", "false")
 engine = create_engine(DATABASE_URL)
 
-LOGIN_ENABLED = False
+LOGIN_ENABLED = "no"
 
 sessionlocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 base = declarative_base()
@@ -32,6 +32,10 @@ def get_db():
     finally:
         db.close()
 
+@app.post('/k')
+async def key():
+    return {"key":LOGIN_ENABLED}
+
 @app.post('/p')
 async def post(data: check_data, db: Session = Depends(get_db)):
     user_id = data.id
@@ -46,6 +50,24 @@ async def post(data: check_data, db: Session = Depends(get_db)):
     db.commit()
 
     return {"status" : "successfully created a user"}
+
+@app.delete('/d')
+async def delete(data: check_data, db :Session = Depends(get_db)):
+    user_id = data.id
+
+    if_user_exists = db.query(cc_users).filter(cc_users.id == user_id).first()
+    
+    if if_user_exists:
+        db.delete(if_user_exists)
+        db.commit()
+
+        return {"status" : "succesfully deleted a user"}
+    else:
+        return {"status" : "user not exists"}
+
+@app.get('/c')
+async def CheckConnection():
+    return {"status": "success"}
 
 @app.post('/l')
 async def login(data: check_data, db: Session = Depends(get_db)):
